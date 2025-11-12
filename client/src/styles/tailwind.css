@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans bg-[#f5f7fa] text-slate-900 antialiased;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-brand text-white shadow hover:bg-brand-dark;
+  }
+
+  .btn-outline {
+    @apply border border-slate-200 text-slate-900 hover:border-brand hover:text-brand;
+  }
+
+  .btn-link {
+    @apply text-sm font-semibold text-brand hover:text-brand-dark;
+  }
+}

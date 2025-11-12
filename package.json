@@ -1,0 +1,17 @@
+{
+  "name": "pew-tools-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo workspace for Pew Tools website and server",
+  "scripts": {
+    "install:all": "npm install --workspaces",
+    "dev": "npm run dev --workspace client",
+    "build": "npm run build --workspace client",
+    "preview": "npm run preview --workspace client",
+    "server": "npm run start --workspace server"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ]
+}
