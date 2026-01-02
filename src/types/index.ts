@@ -1,4 +1,4 @@
-export type ProductCategory = "Power Tools" | "Hand Tools" | "DIY Kits" | "Accessories";
+export type ProductCategory = "Conveyors" | "Blades" | "Rollers" | "Specialised Machines" | "Material Handling Equipment" | "Drums";
 
 export interface Product {
   id: string;
