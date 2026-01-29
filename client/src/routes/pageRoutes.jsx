@@ -6,7 +6,6 @@ import { ProductDetailPage } from "@/pages/ProductDetailPage";
 import { PortfolioPage } from "@/pages/PortfolioPage";
 import { BlogPage } from "@/pages/BlogPage";
 import { ContactPage } from "@/pages/ContactPage";
-import { PricingPage } from "@/pages/PricingPage";
 import { TestimonialsPage } from "@/pages/TestimonialsPage";
 import { FAQPage } from "@/pages/FAQPage";
 import { CareersPage } from "@/pages/CareersPage";
@@ -28,7 +27,6 @@ const routes = [
   { path: "/portfolio", element: <PortfolioPage /> },
   { path: "/blog", element: <BlogPage /> },
   { path: "/contact", element: <ContactPage /> },
-  { path: "/pricing", element: <PricingPage /> },
   { path: "/testimonials", element: <TestimonialsPage /> },
   { path: "/faq", element: <FAQPage /> },
   { path: "/careers", element: <CareersPage /> },

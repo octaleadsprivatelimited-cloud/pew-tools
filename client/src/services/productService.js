@@ -328,6 +328,9 @@ export const fetchCategories = async () => Promise.resolve(sampleCategories);
 
 export const fetchProducts = async () => Promise.resolve(sampleProducts);
 
+// Export sampleProducts for data initialization
+export { sampleProducts };
+
 export const fetchCategoryBySlug = async (slug) => {
   const categories = await fetchCategories();
   return categories?.find(

@@ -486,10 +486,10 @@ export const HomePage = () => {
               accelerate deployment across fabrication floors, construction sites, and maintenance crews.
             </p>
             <Link
-              to="/pricing"
+              to="/products"
               className="inline-flex items-center gap-3 rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-brand hover:bg-brand/10"
             >
-              View pricing catalogue
+              View product catalogue
               <span aria-hidden>→</span>
             </Link>
           </div>
@@ -567,7 +567,7 @@ export const HomePage = () => {
                   <span className="text-brand" aria-hidden>
                     ●
                   </span>
-                  Fleet pricing alerts
+                  Fleet management alerts
                 </div>
               </div>
             </div>

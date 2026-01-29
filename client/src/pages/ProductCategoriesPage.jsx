@@ -141,15 +141,15 @@ export const ProductCategoriesPage = () => {
             <div className="max-w-2xl space-y-2">
               <h2 className="text-3xl font-semibold md:text-4xl">All flagship products at a glance.</h2>
               <p className="text-base text-white/70">
-                Drill into product details, compare specs, and build your crew’s toolkit. Every featured product ships
+                Drill into product details, compare specs, and build your crew's toolkit. Every featured product ships
                 telemetry-ready, and most include extended warranty and service options.
               </p>
             </div>
             <a
-              href="/pricing"
+              href="/contact"
               className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-brand hover:bg-brand/20"
             >
-              View pricing catalogue
+              Contact for pricing
               <span aria-hidden>→</span>
             </a>
           </div>

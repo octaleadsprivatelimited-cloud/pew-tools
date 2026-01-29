@@ -21,7 +21,7 @@ export const MobileMenu = ({ open, onClose, links }) => {
           exit={{ opacity: 0 }}
         >
           <motion.nav
-            className="absolute right-0 top-0 h-full w-4/5 max-w-sm bg-white p-6"
+            className="absolute right-0 top-0 h-full w-4/5 max-w-sm bg-slate-100 p-6"
             variants={menuVariants}
             initial="hidden"
             animate="visible"
@@ -48,7 +48,7 @@ export const MobileMenu = ({ open, onClose, links }) => {
                       to={link.to}
                       onClick={onClose}
                       className={`block rounded-lg px-4 py-2 text-base font-medium transition ${
-                        isActive ? "bg-brand/10 text-brand" : "hover:bg-slate-100"
+                        isActive ? "bg-white text-brand" : "text-slate-900 hover:bg-white"
                       }`}
                     >
                       {link.label}
@@ -57,7 +57,7 @@ export const MobileMenu = ({ open, onClose, links }) => {
                 );
               })}
             </ul>
-            <div className="mt-6 rounded-xl bg-slate-100 p-4">
+            <div className="mt-6 rounded-xl bg-white p-4">
               <p className="text-sm text-slate-600">
                 Need a tailored quote? Reach out to our solutions team and we will equip your crew with
                 the right hardware.
