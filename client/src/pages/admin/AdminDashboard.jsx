@@ -5,13 +5,15 @@ import {
   servicesService,
   blogsService,
   contactService,
-} from "@/services/localStorageService";
+  portfolioService,
+} from "@/services/firebaseService";
 
 export const AdminDashboard = () => {
   const [stats, setStats] = useState({
     products: 0,
     services: 0,
     blogs: 0,
+    portfolio: 0,
     contact: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -19,10 +21,11 @@ export const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [products, services, blogs, contact] = await Promise.all([
+        const [products, services, blogs, portfolio, contact] = await Promise.all([
           productsService.getAll(),
           servicesService.getAll(),
           blogsService.getAll(),
+          portfolioService.getAll(),
           contactService.getAll(),
         ]);
 
@@ -30,6 +33,7 @@ export const AdminDashboard = () => {
           products: products.length,
           services: services.length,
           blogs: blogs.length,
+          portfolio: portfolio.length,
           contact: contact.length,
         });
       } catch (error) {
@@ -45,6 +49,7 @@ export const AdminDashboard = () => {
   const statCards = [
     { label: "Products", count: stats.products, path: "/admin/products", color: "blue", icon: "🛠️" },
     { label: "Services", count: stats.services, path: "/admin/services", color: "green", icon: "⚙️" },
+    { label: "Portfolio", count: stats.portfolio, path: "/admin/portfolio", color: "indigo", icon: "📁" },
     { label: "Blogs", count: stats.blogs, path: "/admin/blogs", color: "purple", icon: "📝" },
     { label: "Contact Details", count: stats.contact, path: "/admin/contact", color: "orange", icon: "📞" },
   ];
@@ -112,6 +117,13 @@ export const AdminDashboard = () => {
           >
             <h3 className="font-semibold text-gray-900">Add Service</h3>
             <p className="text-sm text-gray-600 mt-1">Add a new service offering</p>
+          </Link>
+          <Link
+            to="/admin/portfolio"
+            className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
+          >
+            <h3 className="font-semibold text-gray-900">Add Portfolio Project</h3>
+            <p className="text-sm text-gray-600 mt-1">Add a new portfolio project</p>
           </Link>
         </div>
       </div>

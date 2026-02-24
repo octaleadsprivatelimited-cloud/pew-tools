@@ -1,5 +1,3 @@
-import { useEffect, useRef, useState } from "react";
-
 const historyMilestones = [
   {
     year: "2008",
@@ -27,27 +25,6 @@ const historyMilestones = [
   },
 ];
 
-const teamMembers = [
-  {
-    name: "Sanjana Patel",
-    role: "Chief Technology Officer",
-    bio: "Leads product innovation across telemetry, firmware, and edge analytics after a decade in robotics research.",
-    image: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    name: "Arjun Desai",
-    role: "Director, Industrial Projects",
-    bio: "Oversees enterprise rollouts for automotive, aviation, and heavy engineering partners nationwide.",
-    image: "https://images.unsplash.com/photo-1552058544-f2b08422138a?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    name: "Neha Kulkarni",
-    role: "Head of Customer Success",
-    bio: "Runs the nationwide service network delivering calibration clinics and uptime-focused agreements.",
-    image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80",
-  },
-];
-
 const missionStats = [
   { label: "Cities served", value: "480+", description: "Dedicated logistics partnerships across India" },
   { label: "Technicians trained", value: "12,500", description: "Hands-on certification programs every quarter" },
@@ -55,75 +32,28 @@ const missionStats = [
   { label: "Response SLA", value: "4 hrs", description: "Rapid on-site support in major industrial zones" },
 ];
 
-const CountdownBlock = () => {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const target = useRef(new Date().setDate(new Date().getDate() + 12));
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      const difference = Math.max(0, Number(target.current) - Date.now());
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((difference / (1000 * 60)) % 60);
-      const seconds = Math.floor((difference / 1000) % 60);
-      setTimeLeft({ days, hours, minutes, seconds });
-    }, 1000);
-
-    return () => window.clearInterval(interval);
-  }, []);
-
-  const units = [
-    { label: "Days", value: timeLeft.days },
-    { label: "Hours", value: timeLeft.hours },
-    { label: "Minutes", value: timeLeft.minutes },
-    { label: "Seconds", value: timeLeft.seconds },
-  ];
-
-  return (
-    <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-10 text-white shadow-xl backdrop-blur">
-      <div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,107,26,0.2),_transparent_60%)]"
-        aria-hidden
-      />
-      <div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(148,163,184,0.18),_transparent_60%)]"
-        aria-hidden
-      />
-      <div className="relative space-y-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-white/70">
-              <span aria-hidden>⏳</span>
-              Upcoming milestone
-            </span>
-            <h3 className="text-2xl font-semibold">Next VX telemetry release goes live soon.</h3>
-            <p className="text-sm text-white/60">
-              We push telemetry enhancements, predictive maintenance models, and analytics dashboards with minimal downtime.
-            </p>
-          </div>
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2 text-sm font-semibold text-white transition hover:border-brand hover:bg-brand/20"
-          >
-            Book a preview demo
-            <span aria-hidden>→</span>
-          </a>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-4">
-          {units.map((item) => (
-            <div key={item.label} className="rounded-2xl border border-white/10 bg-white/10 p-5 text-center">
-              <p className="text-3xl font-semibold text-brand">{String(item.value).padStart(2, "0")}</p>
-              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/60">{item.label}</p>
-            </div>
-          ))}
-        </div>
-        <p className="text-xs text-white/50">
-          Stay subscribed for early release notes, feature previews, and best practices to keep your fleet calibrated.
-        </p>
-      </div>
-    </section>
-  );
-};
+const whyChooseUs = [
+  {
+    title: "Traceable calibration",
+    description: "Every tool ships with certification records and is supported by our nationwide calibration labs for ongoing compliance.",
+    icon: "✓",
+  },
+  {
+    title: "Telemetry-first design",
+    description: "VX-enabled hardware streams usage and torque data so you get predictive insights and audit-ready reporting.",
+    icon: "📡",
+  },
+  {
+    title: "On-site service camps",
+    description: "Our technicians run preventive maintenance clinics and swap programs so your crews never wait on hardware.",
+    icon: "🔧",
+  },
+  {
+    title: "Single lifecycle partner",
+    description: "From procurement to retirement, we handle deployment, training, and support so you focus on production.",
+    icon: "🔄",
+  },
+];
 
 export const AboutPage = () => {
   return (
@@ -230,50 +160,47 @@ export const AboutPage = () => {
         </div>
       </section>
 
-      <section className="relative border-t border-white/5 py-24">
+      <section className="relative border-t border-white/5 py-24 pb-20">
         <div
-          className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(255,255,255,0.08),_transparent_65%)]"
-          aria-hidden
-        />
-        <div
-          className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(14,165,233,0.18),_transparent_60%)]"
+          className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(255,107,26,0.15),_transparent_60%)]"
           aria-hidden
         />
         <div className="container relative z-10 px-6">
-          <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 text-center">
+          <div className="mx-auto max-w-3xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-white/70">
-              <span aria-hidden>🤝</span>
-              Leadership
+              <span aria-hidden>⭐</span>
+              Why choose us
             </span>
-            <h2 className="text-3xl font-semibold md:text-4xl">Meet the team orchestrating uptime for industrial crews.</h2>
-            <p className="text-base text-white/70">
-              Cross-functional specialists in telemetry, mechanical engineering, operations, and customer success bring decades of
-              expertise to every project we launch.
+            <h2 className="mt-4 text-3xl font-semibold md:text-4xl">
+              Built for reliability, backed by service.
+            </h2>
+            <p className="mt-4 text-base text-white/70">
+              Industrial teams trust Pew Tools for precision hardware, real-time telemetry, and responsive support across India.
             </p>
           </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {teamMembers.map((member) => (
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {whyChooseUs.map((item) => (
               <article
-                key={member.name}
-                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                key={item.title}
+                className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center transition hover:border-brand/40 hover:shadow-brand/10"
               >
-                <div className="h-40 w-full overflow-hidden">
-                  <img src={member.image} alt={member.name} className="h-full w-full object-cover" />
-                </div>
-                <div className="space-y-2 p-6">
-                  <h3 className="text-xl font-semibold text-white">{member.name}</h3>
-                  <p className="text-sm uppercase tracking-[0.3em] text-white/60">{member.role}</p>
-                  <p className="text-sm text-white/70">{member.bio}</p>
-                </div>
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/5 text-xl">
+                  {item.icon}
+                </span>
+                <h3 className="mt-4 text-lg font-semibold text-white">{item.title}</h3>
+                <p className="mt-2 text-sm text-white/70">{item.description}</p>
               </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="pb-20">
-        <div className="container">
-          <CountdownBlock />
+          <div className="mt-12 text-center">
+            <a
+              href="/contact"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:border-brand hover:bg-brand/20"
+            >
+              Talk to our team
+              <span aria-hidden>→</span>
+            </a>
+          </div>
         </div>
       </section>
     </div>

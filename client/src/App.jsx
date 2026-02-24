@@ -9,6 +9,7 @@ import { ProductsPage } from "./pages/admin/ProductsPage";
 import { ServicesPage } from "./pages/admin/ServicesPage";
 import { BlogsPage } from "./pages/admin/BlogsPage";
 import { ContactPage } from "./pages/admin/ContactPage";
+import { PortfolioPage as AdminPortfolioPage } from "./pages/admin/PortfolioPage";
 
 const App = () => {
   return (
@@ -68,6 +69,16 @@ const App = () => {
           <ProtectedRoute>
             <AdminLayout>
               <BlogsPage />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/portfolio"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <AdminPortfolioPage />
             </AdminLayout>
           </ProtectedRoute>
         }

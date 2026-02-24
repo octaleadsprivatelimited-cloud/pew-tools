@@ -42,7 +42,7 @@ export const Footer = () => {
           <ul className="mt-3 grid grid-cols-2 gap-2 text-sm text-white/70">
             <li><a className="hover:text-brand" href="/services">Services</a></li>
             <li><a className="hover:text-brand" href="/products">Products</a></li>
-            <li><a className="hover:text-brand" href="/careers">Careers</a></li>
+            <li><a className="hover:text-brand" href="/portfolio">Portfolio</a></li>
             <li><a className="hover:text-brand" href="/faq">FAQ</a></li>
             <li><a className="hover:text-brand" href="/contact">Contact</a></li>
           </ul>

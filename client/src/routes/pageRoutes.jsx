@@ -8,7 +8,6 @@ import { BlogPage } from "@/pages/BlogPage";
 import { ContactPage } from "@/pages/ContactPage";
 import { TestimonialsPage } from "@/pages/TestimonialsPage";
 import { FAQPage } from "@/pages/FAQPage";
-import { CareersPage } from "@/pages/CareersPage";
 import { PowerToolsPage } from "@/pages/PowerToolsPage";
 import { ConstructionToolsPage } from "@/pages/ConstructionToolsPage";
 import { IndustrialEquipmentPage } from "@/pages/IndustrialEquipmentPage";
@@ -29,7 +28,6 @@ const routes = [
   { path: "/contact", element: <ContactPage /> },
   { path: "/testimonials", element: <TestimonialsPage /> },
   { path: "/faq", element: <FAQPage /> },
-  { path: "/careers", element: <CareersPage /> },
   { path: "/power-tools", element: <PowerToolsPage /> },
   { path: "/construction-tools", element: <ConstructionToolsPage /> },
   { path: "/industrial-equipment", element: <IndustrialEquipmentPage /> },

@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import heroBg from "@/assets/images/home-hero.avif";
 import { CategoryCard } from "@/components/CategoryCard";
-import { ProductCard } from "@/components/ProductCard";
-import { fetchCategories, fetchProducts } from "@/services/productService";
+import { fetchCategories } from "@/services/productService";
 
 const heroSlides = [
   {
@@ -77,37 +76,6 @@ const whyChooseUs = [
   },
 ];
 
-const featuredDeals = [
-  {
-    name: "VX Pro Drill Combo",
-    price: "₹29,499",
-    image:
-      "https://images.unsplash.com/photo-1580894897391-34b9af1d0691?auto=format&fit=crop&w=1200&q=80",
-    link: "/products/vx-cordless-drill",
-  },
-  {
-    name: "Precision Torque Kit",
-    price: "₹19,990",
-    image:
-      "https://images.unsplash.com/photo-1505238680356-667803448bb6?auto=format&fit=crop&w=1200&q=80",
-    link: "/products/precision-torque-wrench",
-  },
-  {
-    name: "Workshop Start Pack",
-    price: "₹64,500",
-    image:
-      "https://images.unsplash.com/photo-1506086679525-9d0553a7a91a?auto=format&fit=crop&w=1200&q=80",
-    link: "/workshop-solutions",
-  },
-  {
-    name: "Pro Safety Bundle",
-    price: "₹7,990",
-    image:
-      "https://images.unsplash.com/photo-1531835551801-16d864c8d270?auto=format&fit=crop&w=1200&q=80",
-    link: "/safety-gear",
-  },
-];
-
 const slideMotion = {
   initial: { opacity: 0, scale: 1.02 },
   animate: { opacity: 1, scale: 1 },
@@ -122,7 +90,6 @@ const categoryIconMap = {
 };
 
 export const HomePage = () => {
-  const [featuredProductsData, setFeaturedProductsData] = useState([]);
   const [productCategoriesData, setProductCategoriesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [newsletterEmail, setNewsletterEmail] = useState("");
@@ -134,9 +101,8 @@ export const HomePage = () => {
   useEffect(() => {
     const loadContent = async () => {
       setIsLoading(true);
-      const [cats, prods] = await Promise.all([fetchCategories(), fetchProducts()]);
+      const cats = await fetchCategories();
       setProductCategoriesData(cats ?? []);
-      setFeaturedProductsData(prods?.filter((product) => product.isFeatured) ?? []);
       setIsLoading(false);
     };
 
@@ -167,28 +133,9 @@ export const HomePage = () => {
     [productCategoriesData],
   );
 
-  const normalizedProducts = useMemo(
-    () =>
-      featuredProductsData.map((product, index) => ({
-        id: String(product.id ?? index),
-        slug:
-          product.slug || product.name?.toLowerCase().replace(/\s+/g, "-") || `product-${index + 1}`,
-        name: product.name || product.title || `Flagship Tool ${index + 1}`,
-        description:
-          product.description || "Professional-grade performance and durability for demanding projects.",
-        image: product.image,
-      })),
-    [featuredProductsData],
-  );
-
   const categoryCards = useMemo(
     () => normalizedCategories.map((category) => <CategoryCard key={category.id} category={category} />),
     [normalizedCategories],
-  );
-
-  const productCards = useMemo(
-    () => normalizedProducts.map((product) => <ProductCard key={product.id} product={product} />),
-    [normalizedProducts],
   );
 
   const activeHero = heroSlides[activeSlide];
@@ -361,178 +308,86 @@ export const HomePage = () => {
         </div>
       </section>
 
-      <section className="relative mt-16 overflow-hidden bg-[#050b18] py-24 text-white">
+      <section className="relative mt-16 overflow-hidden bg-[#050b18] py-16 text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,107,26,0.25),_transparent_60%)]" aria-hidden />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(148,163,184,0.2),_transparent_60%)]" aria-hidden />
         <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-brand/20 via-transparent to-transparent" aria-hidden />
 
-        <div className="container relative z-10">
-          <div className="grid gap-16 lg:grid-cols-[1.2fr_1fr] lg:items-start lg:px-6">
-            <div className="space-y-10 lg:pl-4">
-              <div className="space-y-5">
-                <span className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
-                  <span aria-hidden>★</span>
-                  Why Pew Tools
-                </span>
-                <h2 className="text-3xl font-semibold leading-tight md:text-4xl">
-                  Precision hardware, telemetry intelligence, and pro crews who keep your operation running.
-                </h2>
-                <p className="max-w-3xl text-base text-white/70">
-                  We combine aerospace-grade engineering with data-backed service programs to deliver tool fleets that
-                  never slow down. From deployment to diagnostics, every workflow is powered by specialists who know
-                  industrial uptime is non-negotiable.
-                </p>
-              </div>
-
-              <div className="relative grid gap-6 pl-2 sm:grid-cols-2 sm:pl-12">
-                <div className="absolute left-6 top-0 hidden h-full w-0.5 bg-gradient-to-b from-brand via-brand/40 to-transparent sm:block" aria-hidden />
-                {[0, 1, 2, 3].map((index) => (
-                  <div
-                    key={whyChooseUs[index].title}
-                    className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur transition hover:-translate-y-2 hover:border-brand/40 ${
-                      index % 2 === 0 ? "sm:mt-0" : "sm:mt-10"
-                    }`}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-brand/20 via-transparent to-slate-900/20 opacity-0 transition duration-500 group-hover:opacity-100" />
-                    <div className="relative flex h-full flex-col gap-5">
-                      <div className="flex items-center gap-4">
-                        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/20 text-xl">
-                          {whyChooseUs[index].icon}
-                        </span>
-                        <div>
-                          <p className="text-lg font-semibold text-white">{whyChooseUs[index].title}</p>
-                          <p className="text-xs uppercase tracking-[0.3em] text-white/50">0{index + 1}</p>
-                        </div>
-                      </div>
-                      <p className="text-sm text-white/70">{whyChooseUs[index].description}</p>
-                      <div className="rounded-2xl bg-white/10 p-5 text-white">
-                        <div className="text-3xl font-semibold text-brand">{whyChooseUs[index].metric}</div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
-                          {whyChooseUs[index].metricLabel}
-                        </p>
-                        <p className="text-xs text-white/60">{whyChooseUs[index].detail}</p>
-                      </div>
-                      <div className="mt-auto inline-flex items-center gap-2 text-xs font-semibold text-brand">
-                        <span>Learn how</span>
-                        <span aria-hidden className="transition group-hover:translate-x-1">→</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur">
-              <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/5" aria-hidden />
-              <div className="relative space-y-5">
-                <div className="inline-flex items-center gap-2 rounded-full bg-brand/20 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-brand-light">
-                  <span aria-hidden>⏱️</span>
-                  Proven playbooks
-                </div>
-                <h3 className="text-2xl font-semibold">Lifecycle support every step of the way</h3>
-                <ul className="space-y-4 text-sm text-white/70">
-                  <li className="flex gap-3">
-                    <span className="text-brand" aria-hidden>
-                      ●
-                    </span>
-                    Discovery workshops to map crew requirements and safety protocols.
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-brand" aria-hidden>
-                      ●
-                    </span>
-                    Rapid deployment kits with telemetry-enabled tools and calibrated instrumentation.
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-brand" aria-hidden>
-                      ●
-                    </span>
-                    Preventive maintenance schedules, on-site clinics, and swap programs.
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-brand" aria-hidden>
-                      ●
-                    </span>
-                    Analytics dashboards and quarterly business reviews to keep your edge sharp.
-                  </li>
-                </ul>
-                <Link
-                  to="/services"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2 text-sm font-semibold text-white transition hover:border-brand hover:bg-brand/10"
-                >
-                  Explore service programs
-                  <span aria-hidden>→</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="relative mt-16 overflow-hidden bg-[#0f172a] py-24 text-white">
-        <div className="absolute inset-0 origin-top-left bg-[radial-gradient(circle_at_top_left,_rgba(255,_107,_26,_0.25),_transparent_60%)]" aria-hidden />
-        <div className="absolute inset-0 origin-bottom-right bg-[radial-gradient(circle_at_bottom_right,_rgba(148,_163,_184,_0.15),_transparent_55%)]" aria-hidden />
-        <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-brand via-transparent to-brand" aria-hidden />
-        <div className="container relative z-10">
-          <div className="flex flex-col items-center gap-6 text-center">
-            <div className="space-y-2">
-              <span className="eyebrow text-brand/90">Featured deals</span>
-              <h2 className="text-3xl font-semibold md:text-4xl">
-                Power bundles engineered for pro-grade performance.
-              </h2>
-            </div>
-            <p className="mx-auto max-w-3xl text-sm text-white/70 md:text-base">
-              Choose from telemetry-ready driver kits, workshop launch packs, and safety bundles designed to
-              accelerate deployment across fabrication floors, construction sites, and maintenance crews.
+        <div className="container relative z-10 px-6">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
+              <span aria-hidden>★</span>
+              Why Pew Tools
+            </span>
+            <h2 className="mt-4 text-3xl font-semibold leading-tight md:text-4xl">
+              Precision hardware, telemetry intelligence, and pro crews.
+            </h2>
+            <p className="mt-3 text-base text-white/70">
+              Aerospace-grade engineering and data-backed service so your tool fleets never slow down.
             </p>
-            <Link
-              to="/products"
-              className="inline-flex items-center gap-3 rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-brand hover:bg-brand/10"
-            >
-              View product catalogue
-              <span aria-hidden>→</span>
-            </Link>
           </div>
-
-          <div className="mt-12 grid grid-cols-[repeat(auto-fit,minmax(260px,_1fr))] gap-8 lg:mx-auto lg:max-w-6xl">
-            {featuredDeals.map((deal) => (
-              <Link
-                key={deal.name}
-                to={deal.link}
-                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-lg backdrop-blur transition hover:-translate-y-2 hover:border-brand/40"
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {whyChooseUs.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur transition hover:border-brand/40"
               >
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={deal.image}
-                    alt={deal.name}
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
-                  <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/90">
-                    Hot deal
-                  </span>
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/20 text-xl">
+                  {item.icon}
+                </span>
+                <p className="mt-4 text-lg font-semibold text-white">{item.title}</p>
+                <p className="mt-2 text-sm text-white/70">{item.description}</p>
+                <div className="mt-4 rounded-2xl bg-white/10 p-4">
+                  <p className="text-2xl font-semibold text-brand">{item.metric}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-white/60">{item.metricLabel}</p>
                 </div>
-                <div className="flex flex-col gap-4 p-6">
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-white">{deal.name}</h3>
-                    <p className="text-sm text-white/70">Telemetry-ready and factory calibrated for industrial workflows.</p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-semibold text-brand">{deal.price}</span>
-                    <span className="inline-flex items-center gap-2 text-sm font-semibold text-white/80">
-                      View offer
-                      <span aria-hidden className="transition group-hover:translate-x-1">→</span>
-                    </span>
-                  </div>
-                </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="relative mt-16 overflow-hidden bg-[#050b18] py-24 text-white">
+      <section className="relative overflow-hidden border-t border-white/5 bg-[#050b18] py-16 text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(148,_163,_184,_0.12),_transparent_60%)]" aria-hidden />
+        <div className="container relative z-10 px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="inline-flex items-center gap-2 rounded-full bg-brand/20 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-brand-light">
+              <span aria-hidden>⏱️</span>
+              Proven playbooks
+            </span>
+            <h2 className="mt-4 text-2xl font-semibold md:text-3xl">Lifecycle support every step of the way</h2>
+          </div>
+          <div className="mx-auto mt-10 max-w-2xl rounded-3xl border border-white/10 bg-white/5 p-8 shadow-xl backdrop-blur">
+            <ul className="space-y-3 text-sm text-white/70">
+              <li className="flex gap-3">
+                <span className="text-brand" aria-hidden>●</span>
+                Discovery workshops to map crew requirements and safety protocols.
+              </li>
+              <li className="flex gap-3">
+                <span className="text-brand" aria-hidden>●</span>
+                Rapid deployment kits with telemetry-enabled tools and calibrated instrumentation.
+              </li>
+              <li className="flex gap-3">
+                <span className="text-brand" aria-hidden>●</span>
+                Preventive maintenance schedules, on-site clinics, and swap programs.
+              </li>
+              <li className="flex gap-3">
+                <span className="text-brand" aria-hidden>●</span>
+                Analytics dashboards and quarterly business reviews to keep your edge sharp.
+              </li>
+            </ul>
+            <Link
+              to="/services"
+              className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2 text-sm font-semibold text-white transition hover:border-brand hover:bg-brand/10"
+            >
+              Explore service programs
+              <span aria-hidden>→</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative mt-16 overflow-hidden bg-[#050b18] py-16 text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,_107,_26,_0.25),_transparent_60%)]" aria-hidden />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(148,_163,_184,_0.2),_transparent_65%)]" aria-hidden />
         <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-brand via-transparent to-brand" aria-hidden />

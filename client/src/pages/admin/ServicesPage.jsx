@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { servicesService } from "@/services/localStorageService";
+import { servicesService } from "@/services/firebaseService";
 import { DataTable } from "@/components/admin/DataTable";
+import { compressImageToDataUrl } from "@/utils/imageCompression";
 
 export const ServicesPage = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingService, setEditingService] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -81,6 +83,22 @@ export const ServicesPage = () => {
         console.error("Error deleting service:", error);
         alert("Error deleting service");
       }
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !file.type.startsWith("image/")) return;
+    setUploadingImage(true);
+    try {
+      const dataUrl = await compressImageToDataUrl(file);
+      setFormData((prev) => ({ ...prev, image: dataUrl }));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to process image.");
+    } finally {
+      setUploadingImage(false);
+      e.target.value = "";
     }
   };
 
@@ -169,13 +187,18 @@ export const ServicesPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image URL
+                <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                <label className="block w-full mb-2">
+                  <span className="inline-block px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 text-sm">
+                    {uploadingImage ? "Compressing…" : "Upload image (auto-compressed)"}
+                  </span>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploadingImage} />
                 </label>
                 <input
                   type="url"
-                  value={formData.image}
+                  value={formData.image?.startsWith("data:") ? "" : formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                  placeholder="Or paste image URL"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>

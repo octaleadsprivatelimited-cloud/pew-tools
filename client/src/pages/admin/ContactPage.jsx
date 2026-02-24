@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { contactService } from "@/services/localStorageService";
+import { contactService } from "@/services/firebaseService";
 import { DataTable } from "@/components/admin/DataTable";
 
 export const ContactPage = () => {

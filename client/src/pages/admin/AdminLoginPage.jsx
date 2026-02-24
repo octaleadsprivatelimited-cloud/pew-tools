@@ -35,9 +35,8 @@ export const AdminLoginPage = () => {
         </div>
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <p className="text-sm font-semibold text-blue-900 mb-2">Demo Credentials:</p>
-          <p className="text-xs text-blue-800">Email: admin@pewtools.com</p>
-          <p className="text-xs text-blue-800">Password: admin123</p>
+          <p className="text-sm font-semibold text-blue-900 mb-2">Firebase Auth</p>
+          <p className="text-xs text-blue-800">Sign in with a user created in Firebase Console (Authentication → Users).</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

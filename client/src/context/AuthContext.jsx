@@ -1,14 +1,12 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import {
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { auth } from "@/config/firebase";
 
 const AuthContext = createContext();
-
-// Demo admin credentials
-const ADMIN_CREDENTIALS = {
-  email: "admin@pewtools.com",
-  password: "admin123",
-};
-
-const STORAGE_KEY = "pew_tools_admin_auth";
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -23,49 +21,40 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in (from localStorage)
-    const storedAuth = localStorage.getItem(STORAGE_KEY);
-    if (storedAuth) {
-      try {
-        const userData = JSON.parse(storedAuth);
-        setCurrentUser(userData);
-      } catch (error) {
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }
-    setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user ? { email: user.email, uid: user.uid, displayName: user.displayName } : null);
+      setLoading(false);
+    });
+    return () => unsubscribe();
   }, []);
 
   const login = async (email, password) => {
-    // Simulate async operation
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Check credentials
-    if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-      const userData = {
-        email: email,
-        uid: "admin-user-001",
-        displayName: "Admin User",
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      return {
+        success: true,
+        user: { email: user.email, uid: user.uid, displayName: user.displayName },
       };
-      
-      // Store in localStorage
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
-      setCurrentUser(userData);
-      
-      return { success: true, user: userData };
-    } else {
-      return { success: false, error: "Invalid email or password" };
+    } catch (error) {
+      const message =
+        error.code === "auth/invalid-credential" || error.code === "auth/wrong-password"
+          ? "Invalid email or password"
+          : error.code === "auth/user-not-found"
+            ? "No account found with this email"
+            : error.message || "Login failed";
+      return { success: false, error: message };
     }
   };
 
   const logout = async () => {
-    // Simulate async operation
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    
-    localStorage.removeItem(STORAGE_KEY);
-    setCurrentUser(null);
-    
-    return { success: true };
+    try {
+      await firebaseSignOut(auth);
+      return { success: true };
+    } catch (error) {
+      console.error("Logout error:", error);
+      return { success: false };
+    }
   };
 
   const value = {
@@ -75,5 +64,9 @@ export const AuthProvider = ({ children }) => {
     loading,
   };
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
 };

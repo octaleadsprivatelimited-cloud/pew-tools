@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { productsService } from "@/services/localStorageService";
+import { productsService } from "@/services/firebaseService";
 import { DataTable } from "@/components/admin/DataTable";
+import { compressImageToDataUrl } from "@/utils/imageCompression";
 
 export const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -68,38 +69,27 @@ export const ProductsPage = () => {
     }
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       alert("Please select an image file");
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Image size should be less than 5MB");
-      return;
-    }
-
     setUploadingImage(true);
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      const base64String = reader.result;
-      setFormData({ ...formData, image: base64String });
+    try {
+      const base64String = await compressImageToDataUrl(file);
+      setFormData((prev) => ({ ...prev, image: base64String }));
       setImagePreview(base64String);
+    } catch (err) {
+      console.error("Image compress/upload failed:", err);
+      alert("Failed to process image. Try a smaller file or use Image URL.");
+    } finally {
       setUploadingImage(false);
-    };
-
-    reader.onerror = () => {
-      alert("Error reading image file");
-      setUploadingImage(false);
-    };
-
-    reader.readAsDataURL(file);
+    }
+    e.target.value = "";
   };
 
   const handleImageUrlChange = (e) => {
@@ -284,7 +274,7 @@ export const ProductsPage = () => {
                 <div className="mb-3">
                   <label className="block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 text-center">
                     <span className="text-sm font-medium text-gray-700">
-                      {uploadingImage ? "Uploading..." : "Upload Image"}
+                      {uploadingImage ? "Compressing…" : "Upload image (auto-compressed)"}
                     </span>
                     <input
                       type="file"

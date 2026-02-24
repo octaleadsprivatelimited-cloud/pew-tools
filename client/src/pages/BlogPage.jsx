@@ -1,67 +1,30 @@
-const blogPosts = [
-  {
-    title: "Selecting the right torque tools for industrial assembly",
-    date: "Aug 10, 2024",
-    author: "Aarav Shah",
-    category: "Tooling",
-    readTime: "7 min read",
-    excerpt:
-      "Evaluate duty-cycle, precision requirements, and telemetry options before choosing your next torque solution. We break down the key specs every plant manager should know.",
-    image: "https://images.unsplash.com/photo-1531973576160-7125cd663d86?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    title: "How telemetry reduces downtime for construction fleets",
-    date: "Jul 28, 2024",
-    author: "Priya Deshmukh",
-    category: "Telemetry",
-    readTime: "6 min read",
-    excerpt:
-      "See how VX telemetry surfaces torque, runtime, and maintenance alerts to keep multi-shift crews on schedule across large infrastructure builds.",
-    image: "https://images.unsplash.com/photo-1529429617124-aee711a332da?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    title: "Five workshop upgrades that boost safety compliance",
-    date: "Jul 05, 2024",
-    author: "Karan Mehta",
-    category: "Safety",
-    readTime: "5 min read",
-    excerpt:
-      "From ESD-safe benches to smart PPE badges, discover the upgrades that help workshops meet evolving compliance standards.",
-    image: "https://images.unsplash.com/photo-1529429617124-aee711a332da?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    title: "The telemetry checklist for aerospace assembly lines",
-    date: "Jun 21, 2024",
-    author: "Ananya Rao",
-    category: "Aerospace",
-    readTime: "8 min read",
-    excerpt:
-      "A framework to deploy telemetry-ready driver systems without disrupting throughput or clean-room protocols.",
-    image: "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    title: "Configuring mobile service camps for remote sites",
-    date: "Jun 02, 2024",
-    author: "Deepak Kulkarni",
-    category: "Service",
-    readTime: "6 min read",
-    excerpt:
-      "Plan mobile calibration labs, swap kits, and spares logistics to support crews at wind farms, mines, and highway builds.",
-    image: "https://images.unsplash.com/photo-1572985025314-38c375b21769?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    title: "Why predictive maintenance matters for tool fleets",
-    date: "May 15, 2024",
-    author: "Sahana Singh",
-    category: "Analytics",
-    readTime: "9 min read",
-    excerpt:
-      "Telemetry-driven maintenance can cut unexpected downtime by double digits. Here’s how to build the roadmap.",
-    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-  },
-];
+import { useState, useEffect } from "react";
+import { blogsService } from "@/services/firebaseService";
+
+const formatDate = (timestamp) => {
+  if (!timestamp) return "";
+  const d = timestamp.toMillis ? new Date(timestamp.toMillis()) : new Date(timestamp);
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+};
 
 export const BlogPage = () => {
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await blogsService.getAll();
+        setBlogPosts(data.filter((b) => b.published).map((b) => ({ ...b, date: formatDate(b.createdAt), category: b.category || "Insights", readTime: b.readTime || "5 min read" })));
+      } catch (e) {
+        console.error("Error loading blogs:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
   const [featured, ...others] = blogPosts;
 
   return (
@@ -105,6 +68,9 @@ export const BlogPage = () => {
             </a>
           </div>
 
+          {loading ? (
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-white/70">Loading...</div>
+          ) : featured ? (
           <article className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur">
             <div className="space-y-4">
               <span className="inline-flex items-center gap-2 rounded-full bg-brand/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-brand-light">
@@ -120,7 +86,7 @@ export const BlogPage = () => {
                 <span>{featured.readTime}</span>
               </div>
               <a
-                href="/contact"
+                href={featured.slug ? `/blog/${featured.slug}` : "/contact"}
                 className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-brand hover:bg-brand/20"
               >
                 Read the case study
@@ -128,6 +94,7 @@ export const BlogPage = () => {
               </a>
             </div>
           </article>
+          ) : null}
         </div>
       </section>
 
@@ -145,14 +112,17 @@ export const BlogPage = () => {
             </p>
           </div>
           <div className="mt-12 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {others.map((post) => (
+            {loading ? (
+              <div className="col-span-full rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-white/70">Loading posts...</div>
+            ) : (
+              others.map((post) => (
               <article
-                key={post.title}
+                key={post.id || post.title}
                 className="group flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow transition hover:-translate-y-2 hover:border-brand/40 hover:shadow-brand/20"
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={post.image}
+                    src={post.image || "https://images.unsplash.com/photo-1531973576160-7125cd663d86?auto=format&fit=crop&w=1200&q=80"}
                     alt={post.title}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
                   />
@@ -175,7 +145,7 @@ export const BlogPage = () => {
                   </div>
                 </div>
               </article>
-            ))}
+            )))}
           </div>
         </div>
       </section>

@@ -1,17 +1,10 @@
-import { useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { initializeData } from "@/utils/initializeData";
 
 export const AdminLayout = ({ children }) => {
   const { logout, currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Initialize data from website on first admin panel load
-  useEffect(() => {
-    initializeData();
-  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -22,6 +15,7 @@ export const AdminLayout = ({ children }) => {
     { path: "/admin/dashboard", label: "Dashboard", icon: "📊" },
     { path: "/admin/products", label: "Products", icon: "🛠️" },
     { path: "/admin/services", label: "Services", icon: "⚙️" },
+    { path: "/admin/portfolio", label: "Portfolio", icon: "📁" },
     { path: "/admin/blogs", label: "Blogs", icon: "📝" },
     { path: "/admin/contact", label: "Contact Details", icon: "📞" },
   ];

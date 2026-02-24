@@ -1,71 +1,5 @@
-const serviceCategories = [
-  {
-    title: "Engineering & fabrication",
-    description:
-      "Design, prototype, and produce custom hand and power tools engineered to match duty-cycle, tolerances, and safety requirements for every industry vertical.",
-    items: [
-      "Torque-verified power driver systems",
-      "Precision hand tool sets with insulation",
-      "Specialty fixtures and jigs for assembly",
-      "Private label and OEM branding programs",
-    ],
-  },
-  {
-    title: "Workshop deployment",
-    description:
-      "Convert empty floors into fully instrumented workshops. Our team configures workstations, storage, telemetry endpoints, and EHS-compliant layouts in weeks, not months.",
-    items: [
-      "Site audits and workflow mapping",
-      "Bench, storage, and lift installation",
-      "Tool crib digitisation and tracking",
-      "SOP documentation and crew onboarding",
-    ],
-  },
-  {
-    title: "Maintenance & calibration",
-    description:
-      "Keep uptime predictable with scheduled service camps, calibration labs, and repair programs handled by Pew-certified technicians across India.",
-    items: [
-      "On-site preventive maintenance clinics",
-      "Torque tool calibration with traceable certificates",
-      "Hot-swap loaner hardware",
-      "Break/fix and refurbishment services",
-    ],
-  },
-  {
-    title: "Telemetry & analytics",
-    description:
-      "Connect your tool fleet to live dashboards for productivity, compliance, and predictive insights. We integrate VX telemetry with existing ERPs and CMMS platforms.",
-    items: [
-      "VX telemetry sensor retrofits",
-      "Dashboard configuration and alerts",
-      "Integration with SAP, Oracle, and custom APIs",
-      "Predictive maintenance modelling",
-    ],
-  },
-  {
-    title: "Training & certification",
-    description:
-      "Equip crews with the knowledge to operate, troubleshoot, and maintain complex tooling through immersive training experiences and certification tracks.",
-    items: [
-      "Hands-on workshops and simulator labs",
-      "EHS compliance and safety certifications",
-      "Shift supervisor and champion programs",
-      "Digital knowledge bases and refresher modules",
-    ],
-  },
-  {
-    title: "Fleet lifecycle management",
-    description:
-      "We handle procurement, deployment, maintenance, and upgrade paths for large tool fleets so your teams focus on the job—not the hardware logistics.",
-    items: [
-      "Strategic procurement and vendor consolidation",
-      "Lifecycle planning and upgrade roadmaps",
-      "Centralised inventory and kitting",
-      "Asset recovery and sustainability programs",
-    ],
-  },
-];
+import { useState, useEffect } from "react";
+import { servicesService } from "@/services/firebaseService";
 
 const differentiators = [
   {
@@ -90,7 +24,25 @@ const differentiators = [
   },
 ];
 
-export const ServicesPage = () => (
+export const ServicesPage = () => {
+  const [serviceCategories, setServiceCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await servicesService.getAll();
+        setServiceCategories(data.map((s) => ({ title: s.title, description: s.description, items: s.features || [], icon: s.icon, image: s.image })));
+      } catch (e) {
+        console.error("Error loading services:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  return (
   <div className="services-page bg-[#050b18] text-white">
     <section className="relative overflow-hidden py-20">
       <div
@@ -190,17 +142,25 @@ export const ServicesPage = () => (
           </p>
         </div>
         <div className="mt-12 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-          {serviceCategories.map((category) => (
+          {loading ? (
+            <div className="col-span-full rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-white/70">Loading services...</div>
+          ) : (
+            serviceCategories.map((category) => (
             <article
               key={category.title}
               className="group h-full overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 shadow transition hover:-translate-y-2 hover:border-brand/40 hover:shadow-brand/20"
             >
+              {category.image && (
+                <div className="mb-4 h-40 overflow-hidden rounded-2xl">
+                  <img src={category.image} alt={category.title} className="h-full w-full object-cover" />
+                </div>
+              )}
               <div className="space-y-3">
                 <h3 className="text-xl font-semibold text-white">{category.title}</h3>
                 <p className="text-sm text-white/70">{category.description}</p>
               </div>
               <ul className="mt-4 space-y-2 text-sm text-white/70">
-                {category.items.map((item) => (
+                {(category.items || []).map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <span aria-hidden className="mt-1 text-brand">
                       ●
@@ -209,15 +169,15 @@ export const ServicesPage = () => (
                   </li>
                 ))}
               </ul>
-              <button
-                type="button"
+              <a
+                href="/contact"
                 className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/70 transition hover:border-brand hover:text-brand"
               >
                 Learn more
                 <span aria-hidden>→</span>
-              </button>
+              </a>
             </article>
-          ))}
+          )))}
         </div>
       </div>
     </section>
@@ -292,4 +252,5 @@ export const ServicesPage = () => (
       </div>
     </section>
   </div>
-);
+  );
+};

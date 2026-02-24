@@ -1,36 +1,36 @@
 import { useState, useEffect } from "react";
-import { blogsService } from "@/services/firebaseService";
+import { portfolioService } from "@/services/firebaseService";
 import { DataTable } from "@/components/admin/DataTable";
 import { compressImageToDataUrl } from "@/utils/imageCompression";
 
-export const BlogsPage = () => {
-  const [blogs, setBlogs] = useState([]);
+export const PortfolioPage = () => {
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [editingBlog, setEditingBlog] = useState(null);
+  const [editingItem, setEditingItem] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    slug: "",
-    excerpt: "",
-    content: "",
+    name: "",
+    sector: "",
+    location: "",
+    description: "",
+    highlights: "",
+    result: "",
     image: "",
-    author: "",
-    published: false,
   });
 
   useEffect(() => {
-    loadBlogs();
+    loadItems();
   }, []);
 
-  const loadBlogs = async () => {
+  const loadItems = async () => {
     try {
       setLoading(true);
-      const data = await blogsService.getAll();
-      setBlogs(data);
+      const data = await portfolioService.getAll();
+      setItems(data);
     } catch (error) {
-      console.error("Error loading blogs:", error);
-      alert("Error loading blogs");
+      console.error("Error loading portfolio:", error);
+      alert("Error loading portfolio");
     } finally {
       setLoading(false);
     }
@@ -39,51 +39,55 @@ export const BlogsPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editingBlog) {
-        await blogsService.update(editingBlog.id, formData);
+      const payload = {
+        ...formData,
+        highlights: formData.highlights.split("\n").map((h) => h.trim()).filter(Boolean),
+      };
+      if (editingItem) {
+        await portfolioService.update(editingItem.id, payload);
       } else {
-        await blogsService.create(formData);
+        await portfolioService.create(payload);
       }
       setShowModal(false);
-      setEditingBlog(null);
+      setEditingItem(null);
       setFormData({
-        title: "",
-        slug: "",
-        excerpt: "",
-        content: "",
+        name: "",
+        sector: "",
+        location: "",
+        description: "",
+        highlights: "",
+        result: "",
         image: "",
-        author: "",
-        published: false,
       });
-      loadBlogs();
+      loadItems();
     } catch (error) {
-      console.error("Error saving blog:", error);
-      alert("Error saving blog");
+      console.error("Error saving portfolio item:", error);
+      alert("Error saving portfolio item");
     }
   };
 
-  const handleEdit = (blog) => {
-    setEditingBlog(blog);
+  const handleEdit = (item) => {
+    setEditingItem(item);
     setFormData({
-      title: blog.title || "",
-      slug: blog.slug || "",
-      excerpt: blog.excerpt || "",
-      content: blog.content || "",
-      image: blog.image || "",
-      author: blog.author || "",
-      published: blog.published || false,
+      name: item.name || "",
+      sector: item.sector || "",
+      location: item.location || "",
+      description: item.description || "",
+      highlights: Array.isArray(item.highlights) ? item.highlights.join("\n") : item.highlights || "",
+      result: item.result || "",
+      image: item.image || "",
     });
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this blog?")) {
+    if (window.confirm("Are you sure you want to delete this portfolio item?")) {
       try {
-        await blogsService.delete(id);
-        loadBlogs();
+        await portfolioService.delete(id);
+        loadItems();
       } catch (error) {
-        console.error("Error deleting blog:", error);
-        alert("Error deleting blog");
+        console.error("Error deleting portfolio item:", error);
+        alert("Error deleting portfolio item");
       }
     }
   };
@@ -105,16 +109,13 @@ export const BlogsPage = () => {
   };
 
   const columns = [
-    { key: "title", label: "Title" },
+    { key: "name", label: "Name" },
+    { key: "sector", label: "Sector" },
+    { key: "location", label: "Location" },
     {
-      key: "excerpt",
-      label: "Excerpt",
+      key: "description",
+      label: "Description",
       render: (value) => (value ? value.substring(0, 50) + "..." : ""),
-    },
-    {
-      key: "published",
-      label: "Status",
-      render: (value) => (value ? "Published" : "Draft"),
     },
   ];
 
@@ -122,31 +123,31 @@ export const BlogsPage = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Blogs Management</h1>
-          <p className="text-gray-600 mt-2">Manage all blog posts</p>
+          <h1 className="text-3xl font-bold text-gray-900">Portfolio Management</h1>
+          <p className="text-gray-600 mt-2">Manage portfolio projects</p>
         </div>
         <button
           onClick={() => {
-            setEditingBlog(null);
+            setEditingItem(null);
             setFormData({
-              title: "",
-              slug: "",
-              excerpt: "",
-              content: "",
+              name: "",
+              sector: "",
+              location: "",
+              description: "",
+              highlights: "",
+              result: "",
               image: "",
-              author: "",
-              published: false,
             });
             setShowModal(true);
           }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
         >
-          Add Blog
+          Add Project
         </button>
       </div>
 
       <DataTable
-        data={blogs}
+        data={items}
         columns={columns}
         onEdit={handleEdit}
         onDelete={handleDelete}
@@ -155,56 +156,71 @@ export const BlogsPage = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">
-              {editingBlog ? "Edit Blog" : "Add Blog"}
+              {editingItem ? "Edit Portfolio Project" : "Add Portfolio Project"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input
                   type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Slug
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Sector</label>
                 <input
                   type="text"
-                  value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  value={formData.sector}
+                  onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
+                  placeholder="e.g. Automotive OEM"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="e.g. Pune, India"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   required
+                  rows={3}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Excerpt
+                  Highlights (one per line)
                 </label>
                 <textarea
-                  value={formData.excerpt}
-                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  required
-                  rows={2}
+                  value={formData.highlights}
+                  onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
+                  rows={4}
+                  placeholder="Deployed 220+ VX telemetry-enabled drivers
+Integrated dashboards with SAP PM"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Content
-                </label>
-                <textarea
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  required
-                  rows={8}
+                <label className="block text-sm font-medium text-gray-700 mb-1">Result</label>
+                <input
+                  type="text"
+                  value={formData.result}
+                  onChange={(e) => setFormData({ ...formData, result: e.target.value })}
+                  placeholder="e.g. 48% faster issue resolution"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
@@ -224,35 +240,12 @@ export const BlogsPage = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Author
-                </label>
-                <input
-                  type="text"
-                  value={formData.author}
-                  onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="published"
-                  checked={formData.published}
-                  onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
-                  className="mr-2"
-                />
-                <label htmlFor="published" className="text-sm font-medium text-gray-700">
-                  Published
-                </label>
-              </div>
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
                   onClick={() => {
                     setShowModal(false);
-                    setEditingBlog(null);
+                    setEditingItem(null);
                   }}
                   className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
@@ -262,7 +255,7 @@ export const BlogsPage = () => {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
-                  {editingBlog ? "Update" : "Create"}
+                  {editingItem ? "Update" : "Create"}
                 </button>
               </div>
             </form>

@@ -45,13 +45,25 @@ export const getAllDocuments = async (collectionName) => {
   try {
     const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
+    return querySnapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
     }));
   } catch (error) {
-    console.error(`Error getting documents from ${collectionName}:`, error);
-    throw error;
+    // Fallback: no index or missing createdAt - fetch without orderBy and sort in memory
+    try {
+      const querySnapshot = await getDocs(collection(db, collectionName));
+      const docs = querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+      docs.sort((a, b) => {
+        const tA = a.createdAt?.toMillis?.() ?? a.createdAt ?? 0;
+        const tB = b.createdAt?.toMillis?.() ?? b.createdAt ?? 0;
+        return (tB || 0) - (tA || 0);
+      });
+      return docs;
+    } catch (fallbackError) {
+      console.error(`Error getting documents from ${collectionName}:`, fallbackError);
+      throw fallbackError;
+    }
   }
 };
 
@@ -108,6 +120,16 @@ export const blogsService = {
   getAll: () => getAllDocuments("blogs"),
   update: (id, data) => updateDocument("blogs", id, data),
   delete: (id) => deleteDocument("blogs", id),
+};
+
+// Portfolio service
+export const portfolioService = {
+  collection: "portfolio",
+  create: (data) => createDocument("portfolio", data),
+  get: (id) => getDocument("portfolio", id),
+  getAll: () => getAllDocuments("portfolio"),
+  update: (id, data) => updateDocument("portfolio", id, data),
+  delete: (id) => deleteDocument("portfolio", id),
 };
 
 // Contact details service

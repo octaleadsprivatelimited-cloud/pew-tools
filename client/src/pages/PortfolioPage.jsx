@@ -1,89 +1,5 @@
-const portfolioProjects = [
-  {
-    name: "Smart factory overhaul",
-    sector: "Automotive OEM",
-    location: "Pune, India",
-    description:
-      "Modernised torque tooling, telemetry dashboards, and maintenance programs across three assembly lines, increasing uptime and compliance reporting.",
-    highlights: [
-      "Deployed 220+ VX telemetry-enabled drivers",
-      "Integrated dashboards with SAP PM for automated work orders",
-      "Delivered bi-weekly calibration camps and swap programs",
-    ],
-    result: "48% faster issue resolution • 22% reduction in rework",
-    image: "https://images.unsplash.com/photo-1531973576160-7125cd663d86?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    name: "Metro construction fast-tracks",
-    sector: "Infrastructure",
-    location: "Hyderabad, India",
-    description:
-      "Supported tunnels and elevated corridors with rugged power tool packs, on-site service camps, and safety compliance gear for multi-shift crews.",
-    highlights: [
-      "Battery banks with hot-swap stations for 24/7 crews",
-      "Safety instrumentation and fall-arrest PPE certified to EN standards",
-      "On-site technicians with 4-hour response and stock of critical spares",
-    ],
-    result: "15% improvement in schedule adherence • Zero lost-time incidents",
-    image: "https://images.unsplash.com/photo-1531835551801-16d864c8d270?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    name: "Wind turbine maintenance kits",
-    sector: "Renewable energy",
-    location: "Gujarat, India",
-    description:
-      "Weatherproofed tool assortments, insulated hand tools, and telemetry modules tailored for wind farm inspection and maintenance crews.",
-    highlights: [
-      "Custom tool vaults sealed to IP66",
-      "Remote torque verification via VX sensors",
-      "Training and certification for 120+ technicians",
-    ],
-    result: "30% reduction in tower climb time • 18% fewer return visits",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    name: "Aerospace assembly clean rooms",
-    sector: "Aerospace",
-    location: "Bengaluru, India",
-    description:
-      "Delivered clean-room compatible hand tools, torque analyzers, and calibration labs for aerospace manufacturing bays.",
-    highlights: [
-      "ESD-safe toolkits with ±0.5 Nm precision",
-      "On-premise calibration lab commissioning",
-      "Telemetry reporting aligned with AS9100 compliance",
-    ],
-    result: "Traceable torque data for 100% of high-spec assemblies",
-    image: "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    name: "Heavy equipment service network",
-    sector: "Mining & earthmoving",
-    location: "Odisha, India",
-    description:
-      "Equipped maintenance depots with rugged power tool systems, hydraulic torque wrenches, and telemetry monitoring for remote sites.",
-    highlights: [
-      "Fleet of hydraulic torque systems with wireless monitoring",
-      "Solar-powered charging stations for remote camps",
-      "Emergency swap kits with 2-hour dispatch",
-    ],
-    result: "12% reduction in unplanned downtime • Faster fault isolation",
-    image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    name: "Premium interiors fit-out",
-    sector: "Commercial real estate",
-    location: "Mumbai, India",
-    description:
-      "Supplied lightweight finishing tools, dust extraction systems, and on-site service hubs for a luxury hotel build.",
-    highlights: [
-      "Lightweight finishing tools with vibration dampening",
-      "Dust extraction and safety enclosures meeting LEED requirements",
-      "Pop-up service kiosks for multi-trade crews",
-    ],
-    result: "8-day acceleration on finishing phase • Improved worker comfort",
-    image: "https://images.unsplash.com/photo-1529429617124-aee711a332da?auto=format&fit=crop&w=1200&q=80",
-  },
-];
+import { useState, useEffect } from "react";
+import { portfolioService } from "@/services/firebaseService";
 
 const testimonials = [
   {
@@ -100,7 +16,25 @@ const testimonials = [
   },
 ];
 
-export const PortfolioPage = () => (
+export const PortfolioPage = () => {
+  const [portfolioProjects, setPortfolioProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await portfolioService.getAll();
+        setPortfolioProjects(data);
+      } catch (e) {
+        console.error("Error loading portfolio:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  return (
   <div className="portfolio-page bg-[#050b18] text-white">
     <section className="relative overflow-hidden py-20">
       <div
@@ -181,14 +115,17 @@ export const PortfolioPage = () => (
           </p>
         </div>
         <div className="mt-12 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-          {portfolioProjects.map((project) => (
+          {loading ? (
+            <div className="col-span-full rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-white/70">Loading portfolio...</div>
+          ) : (
+            portfolioProjects.map((project) => (
             <article
-              key={project.name}
+              key={project.id || project.name}
               className="group flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow transition hover:-translate-y-2 hover:border-brand/40 hover:shadow-brand/20"
             >
               <div className="relative h-48 overflow-hidden">
                 <img
-                  src={project.image}
+                  src={project.image || "https://images.unsplash.com/photo-1531973576160-7125cd663d86?auto=format&fit=crop&w=1200&q=80"}
                   alt={project.name}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
                 />
@@ -204,7 +141,7 @@ export const PortfolioPage = () => (
                   <p className="text-sm text-white/70">{project.description}</p>
                 </div>
                 <ul className="space-y-2 text-sm text-white/70">
-                  {project.highlights.map((highlight) => (
+                  {(project.highlights || []).map((highlight) => (
                     <li key={highlight} className="flex items-start gap-2">
                       <span aria-hidden className="mt-1 text-brand">
                         ●
@@ -218,7 +155,7 @@ export const PortfolioPage = () => (
                 </div>
               </div>
             </article>
-          ))}
+          )))}
         </div>
       </div>
     </section>
@@ -280,4 +217,5 @@ export const PortfolioPage = () => (
       </div>
     </section>
   </div>
-);
+  );
+};

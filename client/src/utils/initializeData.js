@@ -1,5 +1,5 @@
-// Initialize localStorage with existing website data
-import { sampleProducts } from "@/services/productService";
+// Initialize localStorage with existing website data (optional fallback; admin uses Firebase)
+const sampleProducts = [];
 
 // Import data from pages (we'll need to extract these)
 const initialServices = [
@@ -222,8 +222,8 @@ export const initializeData = () => {
     pricing: "pew_tools_pricing",
   };
 
-  // Initialize Products
-  if (!isInitialized(STORAGE_KEYS.products)) {
+  // Initialize Products (only if using localStorage; admin uses Firebase)
+  if (!isInitialized(STORAGE_KEYS.products) && sampleProducts.length > 0) {
     const productsWithTimestamps = sampleProducts.map((product) => ({
       ...product,
       createdAt: new Date().toISOString(),
